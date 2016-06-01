@@ -30,9 +30,14 @@ public class HomeFragment extends Fragment {
     private ImageButton btn_unlock;
 
     private NavigationView navigationView;
+    private static HomeFragment inst;
 
     private String mUrlImg;
     private String mName = "";
+
+    public static HomeFragment getInstance() {
+        return inst;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,6 +92,12 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        inst = this;
+    }
+
     private void refresh() {
         if (mName != null) {
             tv_name.setText(mName);
@@ -115,5 +126,9 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getActivity().getApplicationContext(), "SMS faild, please try again.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+    }
+
+    protected void Success() {
+        Toast.makeText(getActivity(), "Commande réussi.", Toast.LENGTH_SHORT).show();
     }
 }
