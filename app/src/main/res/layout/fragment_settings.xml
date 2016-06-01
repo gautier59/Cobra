@@ -4,10 +4,57 @@
     android:layout_height="match_parent"
     tools:context="com.example.gauti.cobra.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="settings" />
+        android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/iv_picture_settings"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@color/colorPrimary"
+            android:padding="@dimen/padding_picture_home" />
+
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/iv_picture_settings"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/margin_horizontale_settings"
+            android:layout_marginRight="@dimen/margin_horizontale_settings"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:hint="@string/settings_name_hint"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/et_number"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/et_name"
+            android:layout_marginLeft="@dimen/margin_horizontale_settings"
+            android:layout_marginRight="@dimen/margin_horizontale_settings"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:hint="@string/settings_number_hint"
+            android:inputType="phone"
+            android:singleLine="true" />
+
+        <Button
+            android:id="@+id/btn_settings_sauv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/settings_btn_sauv"
+            android:textSize="@dimen/text_size_localisation" />
+    </RelativeLayout>
 </FrameLayout>
