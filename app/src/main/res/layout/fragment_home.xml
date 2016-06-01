@@ -18,7 +18,7 @@
             android:src="@drawable/logo_cobra" />
 
         <ImageView
-            android:id="@+id/iv_home"
+            android:id="@+id/iv_home_picture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/tv_name"
@@ -34,7 +34,6 @@
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:gravity="center_horizontal"
-            android:text="GOLF 6"
             android:textSize="@dimen/text_size_name" />
 
         <RelativeLayout

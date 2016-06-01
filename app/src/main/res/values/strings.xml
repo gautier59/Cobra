@@ -10,6 +10,18 @@
 
     <string name="home_localiser">LOCALISER</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settings_name_hint">Nom</string>
+    <string name="settings_number_hint">Numero</string>
+    <string name="settings_btn_sauv">Sauvegarder</string>
+
+    <string name="popover_photo">Photo</string>
+    <string name="popover_cancel">Annuler</string>
+    <string name="popover_takePicture">Prendre une photo</string>
+    <string name="popover_importPicture">Importer une photo\n\n</string>
+    <string name="settings_error_create_file">Erreur ! Fichier non créé</string>
+
+    <string name="sms_url">URL#</string>
+    <string name="sms_where">WHERE#</string>
+    <string name="sms_lock">RELAY,1#</string>
+    <string name="sms_unlock">RELAY,0#</string>
 </resources>
