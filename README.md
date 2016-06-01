@@ -1,7 +1,6 @@
-# Gestion alarme Cobra à distance
-
+# Management alarm Cobra
 
 ## Features
-- Antidémarrage (On/Off)
-- Numéro personnalisable
-- Localisation
+- interlock system (On/Off)
+- Choose your phone number 
+- Car location
