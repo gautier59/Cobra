@@ -24,4 +24,6 @@
     <string name="sms_where">WHERE#</string>
     <string name="sms_lock">RELAY,1#</string>
     <string name="sms_unlock">RELAY,0#</string>
+
+    <string name="api_debug_key">AIzaSyAs-ilFxp95_27jNyIFf9YcTCAjbsRAVG8</string>
 </resources>
