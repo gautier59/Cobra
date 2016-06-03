@@ -124,13 +124,13 @@ public class LocalisationFragment extends Fragment {
         }, TIME_SMS);
     }
 
-    public void addMarker(Double latitude, Double longitude) {
+    public void addMarker(Double latitude, Double longitude, String speed, String date) {
         googleMap.clear();
         if (locFist) {
             LatLng point = new LatLng(latitude, longitude);
 
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.title(Integer.toString(etapes));
+            markerOptions.title(Integer.toString(etapes) + " : " + speed + "\n" + date);
             markerOptions.visible(true);
             markerOptions.position(point);
 
@@ -149,7 +149,7 @@ public class LocalisationFragment extends Fragment {
             LatLng point = new LatLng(latitude, longitude);
 
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.title(Integer.toString(etapes));
+            markerOptions.title(Integer.toString(etapes) + " : " + speed + "\n" + date);
             markerOptions.visible(true);
             markerOptions.position(point);
 
@@ -161,6 +161,7 @@ public class LocalisationFragment extends Fragment {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
             //animation le zoom toute les 2000ms
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
             etapes++;
         }
     }
