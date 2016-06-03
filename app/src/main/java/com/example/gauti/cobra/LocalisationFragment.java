@@ -2,6 +2,7 @@ package com.example.gauti.cobra;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gauti.cobra.enumeration.EnumSms;
@@ -30,8 +32,12 @@ public class LocalisationFragment extends Fragment {
     private GoogleMap googleMap;
     private int etapes = 0;
     private ImageButton btn_search, btn_stop, btn_play;
+    private TextView tv_marker_info;
     private boolean locFist = false;
     private boolean run = false;
+
+    ArrayList<LatLng> points = null;
+    PolylineOptions polyLineOptions = null;
 
     private ArrayList<com.google.android.gms.maps.model.Marker> mMarkers = new ArrayList<>();
 
@@ -47,6 +53,7 @@ public class LocalisationFragment extends Fragment {
         btn_search = (ImageButton) view.findViewById(R.id.btn_search);
         btn_stop = (ImageButton) view.findViewById(R.id.btn_stop);
         btn_play = (ImageButton) view.findViewById(R.id.btn_play);
+        tv_marker_info = (TextView) view.findViewById(R.id.tv_marker_info);
         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         try {
@@ -126,11 +133,13 @@ public class LocalisationFragment extends Fragment {
 
     public void addMarker(Double latitude, Double longitude, String speed, String date) {
         googleMap.clear();
+        points = new ArrayList<LatLng>();
+        polyLineOptions = new PolylineOptions();
         if (locFist) {
             LatLng point = new LatLng(latitude, longitude);
 
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.title(Integer.toString(etapes) + " : " + speed + "\n" + date);
+            markerOptions.title(Integer.toString(etapes) + " : " + speed + " - " + date);
             markerOptions.visible(true);
             markerOptions.position(point);
 
@@ -138,18 +147,29 @@ public class LocalisationFragment extends Fragment {
 
             //ajout du marqueur sur la carte
             googleMap.addMarker(markerOptions);
+
+            //ajout du marqueur sur la carte
+            //googleMap.addMarker(markerOptions);
             //zoom de la caméra sur la position qu'on désire afficher
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
             //animation le zoom toute les 2000ms
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
+            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    tv_marker_info.setText(marker.getTitle());
+                }
+            });
         } else {
+            LatLng point = new LatLng(latitude, longitude);
             for (int i = 0; i < mMarkers.size(); i++) {
                 googleMap.addMarker(new MarkerOptions().position(mMarkers.get(i).getPosition()).title(mMarkers.get(i).getTitle()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                points.add(mMarkers.get(i).getPosition());
             }
-            LatLng point = new LatLng(latitude, longitude);
-
+            points.add(point);
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.title(Integer.toString(etapes) + " : " + speed + "\n" + date);
+            markerOptions.title(Integer.toString(etapes) + " : " + speed + " - " + date);
             markerOptions.visible(true);
             markerOptions.position(point);
 
@@ -162,7 +182,19 @@ public class LocalisationFragment extends Fragment {
             //animation le zoom toute les 2000ms
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
+            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    tv_marker_info.setText(marker.getTitle());
+                }
+            });
+
             etapes++;
+
+            polyLineOptions.addAll(points);
+            polyLineOptions.width(4);
+            polyLineOptions.color(Color.BLUE);
+            googleMap.addPolyline(polyLineOptions);
         }
     }
 
