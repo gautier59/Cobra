@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.*;
 
 import java.util.ArrayList;
 
-public class LocalisationFragment extends Fragment {
+public class LocalisationFragment extends CobraFragment {
 
     private static final int TIME_SMS = 60000;
 
@@ -54,8 +54,7 @@ public class LocalisationFragment extends Fragment {
         btn_stop = (ImageButton) view.findViewById(R.id.btn_stop);
         btn_play = (ImageButton) view.findViewById(R.id.btn_play);
         tv_marker_info = (TextView) view.findViewById(R.id.tv_marker_info);
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
         try {
             if (googleMap == null) {
                 googleMap = ((MapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -195,20 +194,6 @@ public class LocalisationFragment extends Fragment {
             polyLineOptions.width(4);
             polyLineOptions.color(Color.BLUE);
             googleMap.addPolyline(polyLineOptions);
-        }
-    }
-
-    protected void sendSMSMessage(String message) {
-        String phoneNo = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
-        Log.i("Send SMS", message + " to " + phoneNo);
-
-        try {
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNo, null, message, null, null);
-            Toast.makeText(getActivity().getApplicationContext(), "SMS sent.", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(getActivity().getApplicationContext(), "SMS faild, please try again.", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
         }
     }
 }

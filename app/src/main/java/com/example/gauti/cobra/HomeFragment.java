@@ -1,8 +1,10 @@
 package com.example.gauti.cobra;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -21,7 +23,7 @@ import com.example.gauti.cobra.enumeration.EnumSms;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.squareup.picasso.Picasso;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends CobraFragment {
 
     private Button btn_localisation;
     private TextView tv_name;
@@ -49,8 +51,6 @@ public class HomeFragment extends Fragment {
         iv_picture = (ImageView) view.findViewById(R.id.iv_home_picture);
         btn_lock = (ImageButton) view.findViewById(R.id.btn_lock);
         btn_unlock = (ImageButton) view.findViewById(R.id.btn_unlock);
-
-        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.SEND_SMS},1);
         return view;
     }
 
@@ -112,23 +112,13 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    protected void sendSMSMessage(String message) {
-        String phoneNo = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
-        Log.i("Send SMS", message + " to " + phoneNo);
-
-        try {
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNo, null, message, null, null);
-            Toast.makeText(getActivity().getApplicationContext(), "SMS sent.", Toast.LENGTH_LONG).show();
+    protected void lockSuccess(boolean lock) {
+        String message = null;
+        if (lock) {
+            message = "Voiture vérouillé";
+        } else {
+            message = "Voiture dévérouillé";
         }
-
-        catch (Exception e) {
-            Toast.makeText(getActivity().getApplicationContext(), "SMS faild, please try again.", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
-
-    protected void Success() {
-        Toast.makeText(getActivity(), "Commande réussi.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 }

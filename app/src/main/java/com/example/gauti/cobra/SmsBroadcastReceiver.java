@@ -30,7 +30,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Bundle intentExtras = intent.getExtras();
         if (intentExtras != null) {
             Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
-            String smsMessageStr = "";
+
             for (int i = 0; i < sms.length; ++i) {
                 SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
 
@@ -38,16 +38,16 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                     smsBody = smsMessage.getMessageBody().toString();
                     address = smsMessage.getOriginatingAddress();
 
-                    smsMessageStr += "SMS From: " + address + "\n";
-                    smsMessageStr += smsBody + "\n";
-                    if (smsBody.contains("Success!")) {
-                        instHome.Success();
-                    } else if (smsBody.contains("Lat")) {
+                    if (smsBody.contains("Cut off")) { //Lock
+                        instHome.lockSuccess(true);
+                    } else if (smsBody.contains("Restore")) { //Unlock
+                        instHome.lockSuccess(false);
+                    } else if (smsBody.contains("Lat")) { //Localisation
                         extractData(smsBody, smsMessage.getTimestampMillis());
                     }
                 }
             }
-            Log.i("SMS RETURN", smsMessageStr);
+            Log.i("SMS RETURN", "SMS From: " + address + "\n" + smsBody + "\n");
         }
     }
 
@@ -61,11 +61,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         longitude = Double.parseDouble(data.substring(data.indexOf("Lon:") + 5, data.indexOf(",", data.indexOf(",") + 1)));
         speed = data.substring(data.indexOf("Speed:") + 6, data.indexOf(",", data.indexOf("Speed:")));
 
-        try{
+        try {
             DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             Date netDate = (new Date(timeStamp));
             date = sdf.format(netDate);
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.getStackTrace();
         }
         Log.i("LatLong", "Lat : " + latitude + " - Long : " + longitude + " - Time : " + date);
