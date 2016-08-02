@@ -12,6 +12,7 @@
     <dimen name="padding_picture_home">8sp</dimen>
     <dimen name="margin_btn_lock_unlock">70dp</dimen>
     <dimen name="margin_horizontale_settings">50dp</dimen>
+    <dimen name="demi_margin_horizontale_settings">25dp</dimen>
     <dimen name="margin_top_localisation">10dp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
