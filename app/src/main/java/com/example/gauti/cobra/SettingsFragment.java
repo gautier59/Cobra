@@ -66,16 +66,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         iv_picture = (ImageView) view.findViewById(R.id.iv_picture_settings);
         spiDelai = (Spinner) view.findViewById(R.id.spinnerTime);
 
-        if (/*(ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture() != null)
-                && */(ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)
-                && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero() != null)) {
-            mUrlImg = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture();
-            mName = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName();
-            mNumero = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
-            mDelai = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
-
-            refreshTextAndPictureViews();
-        }
         return view;
     }
 
@@ -162,6 +152,17 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
         // attaching data adapter to spinner
         spiDelai.setAdapter(dataAdapter);
+
+        if (/*(ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture() != null)
+                && */(ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)
+                && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero() != null)) {
+            mUrlImg = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture();
+            mName = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName();
+            mNumero = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
+            mDelai = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
+
+            refreshTextAndPictureViews();
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
