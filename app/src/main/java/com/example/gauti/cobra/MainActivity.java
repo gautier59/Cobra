@@ -2,6 +2,7 @@ package com.example.gauti.cobra;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +14,13 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static final String LATITUDE = "lattitude";
+    public static final String LONGITUDE = "longitude";
+    public static final String DATE = "date";
+    public static final String SPEED = "speed";
+
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +43,24 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_localisation));
+        }
     }
 
     @Override
@@ -65,6 +87,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
         }
+
+        if (getIntent().getExtras() != null) {
+            fragment.setArguments(getIntent().getExtras());
+        }
+
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.commit();

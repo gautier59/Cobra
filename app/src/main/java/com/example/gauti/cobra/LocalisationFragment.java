@@ -1,22 +1,15 @@
 package com.example.gauti.cobra;
 
-import android.Manifest;
-import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
-import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.gauti.cobra.enumeration.EnumSms;
-import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -33,7 +26,7 @@ public class LocalisationFragment extends CobraFragment {
     private int etapes = 0;
     private ImageButton btn_search, btn_stop, btn_play;
     private TextView tv_marker_info;
-    private boolean locFist = false;
+    private boolean locFirst = false;
     private boolean run = false;
 
     ArrayList<LatLng> points = null;
@@ -70,6 +63,16 @@ public class LocalisationFragment extends CobraFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        if (getActivity().getIntent().getExtras() != null) {
+            Double latitude = getActivity().getIntent().getDoubleExtra(MainActivity.LATITUDE, 0);
+            Double longitude = getActivity().getIntent().getDoubleExtra(MainActivity.LONGITUDE, 0);
+            String speed = getActivity().getIntent().getStringExtra(MainActivity.SPEED);
+            String date = getActivity().getIntent().getStringExtra(MainActivity.DATE);
+            locFirst = true;
+            addMarker(latitude, longitude, speed, date);
+        }
+
         return view;
     }
 
@@ -79,7 +82,7 @@ public class LocalisationFragment extends CobraFragment {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFist = true;
+                locFirst = true;
                 sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
             }
         });
@@ -87,7 +90,7 @@ public class LocalisationFragment extends CobraFragment {
         btn_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFist = false;
+                locFirst = false;
                 run = false;
             }
         });
@@ -95,7 +98,7 @@ public class LocalisationFragment extends CobraFragment {
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFist = false;
+                locFirst = false;
                 run = true;
                 sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
                 launchSearch();
@@ -107,6 +110,12 @@ public class LocalisationFragment extends CobraFragment {
     public void onStart() {
         super.onStart();
         inst = this;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        inst = null;
     }
 
     @Override
@@ -134,7 +143,7 @@ public class LocalisationFragment extends CobraFragment {
         googleMap.clear();
         points = new ArrayList<LatLng>();
         polyLineOptions = new PolylineOptions();
-        if (locFist) {
+        if (locFirst) {
             LatLng point = new LatLng(latitude, longitude);
 
             MarkerOptions markerOptions = new MarkerOptions();
@@ -195,5 +204,9 @@ public class LocalisationFragment extends CobraFragment {
             polyLineOptions.color(Color.BLUE);
             googleMap.addPolyline(polyLineOptions);
         }
+    }
+
+    public void setLocFirst(boolean locFirst) {
+        this.locFirst = locFirst;
     }
 }

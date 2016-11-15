@@ -98,6 +98,12 @@ public class HomeFragment extends CobraFragment {
         inst = this;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        inst = null;
+    }
+
     private void refresh() {
         if (mName != null) {
             tv_name.setText(mName);
