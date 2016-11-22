@@ -12,6 +12,7 @@
 
     <string name="settings_name_hint">Nom</string>
     <string name="settings_number_hint">Numero</string>
+    <string name="settings_delai">Délai de renvoi du SMS : </string>
     <string name="settings_btn_sauv">Sauvegarder</string>
 
     <string name="popover_photo">Photo</string>

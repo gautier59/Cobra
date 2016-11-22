@@ -15,9 +15,12 @@ import android.support.design.widget.NavigationView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
@@ -25,8 +28,10 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener{
 
     // Constants
     // --------------------------------------------------------------------------------------------
@@ -39,11 +44,13 @@ public class SettingsFragment extends Fragment {
     private EditText et_number;
     private Button btn_sauv;
     private ImageView iv_picture;
+    private Spinner spiDelai;
 
     private String mUrlImg;
     private Uri mOutputFileUri;
     private String mName;
     private String mNumero;
+    private int mDelai;
 
     private NavigationView navigationView;
 
@@ -57,16 +64,8 @@ public class SettingsFragment extends Fragment {
         et_number = (EditText) view.findViewById(R.id.et_number);
         btn_sauv = (Button) view.findViewById(R.id.btn_settings_sauv);
         iv_picture = (ImageView) view.findViewById(R.id.iv_picture_settings);
+        spiDelai = (Spinner) view.findViewById(R.id.spinnerTime);
 
-        if ((ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture() != null)
-                && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)
-                && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero() != null)) {
-            mUrlImg = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture();
-            mName = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName();
-            mNumero = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
-
-            refreshTextAndPictureViews();
-        }
         return view;
     }
 
@@ -133,6 +132,37 @@ public class SettingsFragment extends Fragment {
                 transaction.commit();
             }
         });
+
+        // Spinner click listener
+        spiDelai.setOnItemSelectedListener(this);
+
+        // Spinner Drop down elements
+        List<String> time = new ArrayList<String>();
+        time.add("30 sec");
+        time.add("45 sec");
+        time.add("1 min");
+        time.add("1 min 15");
+        time.add("1 min 30");
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, time);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spiDelai.setAdapter(dataAdapter);
+
+        if (/*(ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture() != null)
+                && */(ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)
+                && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero() != null)) {
+            mUrlImg = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture();
+            mName = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName();
+            mNumero = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
+            mDelai = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
+
+            refreshTextAndPictureViews();
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
@@ -178,6 +208,8 @@ public class SettingsFragment extends Fragment {
             iv_picture.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             iv_picture.setPadding(paddingPicture, paddingPicture, paddingPicture, paddingPicture);
         }
+
+        spiDelai.setSelection(mDelai);
     }
 
     // Picture
@@ -207,5 +239,22 @@ public class SettingsFragment extends Fragment {
             cursor.close();
         }
         return result;
+    }
+
+    // Listener
+    // --------------------------------------------------------------------------------------------
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        // On selecting a spinner item
+        String item = adapterView.getItemAtPosition(i).toString();
+        ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingDelai(i);
+
+        // Showing selected spinner item
+        //Toast.makeText(adapterView.getContext(), "Selected: " + item + " : " + i, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

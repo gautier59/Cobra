@@ -19,8 +19,6 @@ import java.util.ArrayList;
 
 public class LocalisationFragment extends CobraFragment {
 
-    private static final int TIME_SMS = 60000;
-
     private static LocalisationFragment inst;
     private GoogleMap googleMap;
     private int etapes = 0;
@@ -28,6 +26,7 @@ public class LocalisationFragment extends CobraFragment {
     private TextView tv_marker_info;
     private boolean locFirst = false;
     private boolean run = false;
+    private int timeSms;
 
     ArrayList<LatLng> points = null;
     PolylineOptions polyLineOptions = null;
@@ -47,6 +46,8 @@ public class LocalisationFragment extends CobraFragment {
         btn_stop = (ImageButton) view.findViewById(R.id.btn_stop);
         btn_play = (ImageButton) view.findViewById(R.id.btn_play);
         tv_marker_info = (TextView) view.findViewById(R.id.tv_marker_info);
+
+        timeSms = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
 
         try {
             if (googleMap == null) {
@@ -104,6 +105,26 @@ public class LocalisationFragment extends CobraFragment {
                 launchSearch();
             }
         });
+
+        switch (timeSms) {
+            case 0:
+                timeSms = 30000;
+                break;
+            case 1:
+                timeSms = 45000;
+                break;
+            case 2 :
+                timeSms = 60000;
+                break;
+            case 3:
+                timeSms = 75000;
+                break;
+            case 4:
+                timeSms = 90000;
+                break;
+            default:
+                timeSms = 30000;
+        }
     }
 
     @Override
@@ -136,7 +157,7 @@ public class LocalisationFragment extends CobraFragment {
                     launchSearch();
                 }
             }
-        }, TIME_SMS);
+        }, timeSms);
     }
 
     public void addMarker(Double latitude, Double longitude, String speed, String date) {

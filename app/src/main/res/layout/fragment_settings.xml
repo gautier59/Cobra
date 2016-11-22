@@ -25,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_below="@+id/iv_picture_settings"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginLeft="@dimen/margin_horizontale_settings"
             android:layout_marginRight="@dimen/margin_horizontale_settings"
             android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -44,6 +43,27 @@
             android:inputType="phone"
             android:singleLine="true" />
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/et_number"
+            android:layout_marginLeft="@dimen/margin_horizontale_settings"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/settings_delai"
+                android:gravity="center_vertical"/>
+
+            <Spinner
+                android:id="@+id/spinnerTime"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btn_settings_sauv"
             android:layout_width="match_parent"
@@ -56,5 +76,6 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/settings_btn_sauv"
             android:textSize="@dimen/text_size_localisation" />
+
     </RelativeLayout>
 </FrameLayout>
