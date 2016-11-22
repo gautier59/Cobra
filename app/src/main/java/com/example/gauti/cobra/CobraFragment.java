@@ -26,6 +26,10 @@ public class CobraFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.SEND_SMS}, 1);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
         builderNoPhone = new AlertDialog.Builder(getActivity());
         builderNoPhone.setTitle("Attention !");
         builderNoPhone.setMessage("Veuillez entrer le numéro de téléphone du traceur.");

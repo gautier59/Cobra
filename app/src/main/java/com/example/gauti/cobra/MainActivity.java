@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity
     public static final String SPEED = "speed";
 
     private NavigationView navigationView;
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +38,6 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });*/
-
-        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, 1);
-        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -62,7 +59,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Bundle bundle = intent.getExtras();
+        bundle = intent.getExtras();
         if (bundle != null) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_localisation));
         }
@@ -93,8 +90,8 @@ public class MainActivity extends AppCompatActivity
             fragment = new SettingsFragment();
         }
 
-        if (getIntent().getExtras() != null) {
-            fragment.setArguments(getIntent().getExtras());
+        if (bundle != null) {
+            fragment.setArguments(bundle);
         }
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();

@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.gauti.cobra.enumeration.EnumSms;
+import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -65,11 +66,11 @@ public class LocalisationFragment extends CobraFragment {
             e.printStackTrace();
         }
 
-        if (getActivity().getIntent().getExtras() != null) {
-            Double latitude = getActivity().getIntent().getDoubleExtra(MainActivity.LATITUDE, 0);
-            Double longitude = getActivity().getIntent().getDoubleExtra(MainActivity.LONGITUDE, 0);
-            String speed = getActivity().getIntent().getStringExtra(MainActivity.SPEED);
-            String date = getActivity().getIntent().getStringExtra(MainActivity.DATE);
+        if (getArguments() != null && getArguments().getString(MainActivity.DATE) != null) {
+            Double latitude = getArguments().getDouble(MainActivity.LATITUDE, 0);
+            Double longitude = getArguments().getDouble(MainActivity.LONGITUDE, 0);
+            String speed = getArguments().getString(MainActivity.SPEED);
+            String date = getArguments().getString(MainActivity.DATE);
             locFirst = true;
             addMarker(latitude, longitude, speed, date);
         }
@@ -128,25 +129,25 @@ public class LocalisationFragment extends CobraFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (googleMap != null) {
+            getChildFragmentManager().beginTransaction().remove(getChildFragmentManager().findFragmentById(R.id.map)).commitAllowingStateLoss();
+            googleMap = null;
+        }
+        mMarkers.clear();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         inst = this;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
         inst = null;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (googleMap != null) {
-            getChildFragmentManager().beginTransaction().remove(getChildFragmentManager().findFragmentById(R.id.map)).commit();
-            googleMap = null;
-        }
-        mMarkers.clear();
     }
 
     private void launchSearch() {

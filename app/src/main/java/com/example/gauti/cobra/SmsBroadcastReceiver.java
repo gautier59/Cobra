@@ -47,7 +47,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
             for (int i = 0; i < sms.length; ++i) {
                 SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
-
+                Log.i("NUM sauv: ",ApplicationSharedPreferences.getInstance(context).getSettingsNumero() + " - Num recu:" +smsMessage.getOriginatingAddress());
                 if (smsMessage.getOriginatingAddress().equals(ApplicationSharedPreferences.getInstance(context).getSettingsNumero())) {
                     smsBody = smsMessage.getMessageBody().toString();
                     address = smsMessage.getOriginatingAddress();
