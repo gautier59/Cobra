@@ -41,10 +41,6 @@ public class CobraFragment extends Fragment {
             }
         });
         builderNoPhone.setNegativeButton("Annuler", null);
-
-        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.SEND_SMS}, 1);
-        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
     }
 
     protected void sendSMSMessage(String message) {

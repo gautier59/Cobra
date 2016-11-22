@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.telephony.SmsMessage;
@@ -100,6 +102,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void addNotification(String text, Double latitude, Double longitude, String speed, String date) {
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Intent resultIntent = new Intent(context, MainActivity.class);
         resultIntent.putExtra(MainActivity.LATITUDE, latitude);
         resultIntent.putExtra(MainActivity.LONGITUDE, longitude);
@@ -112,8 +115,9 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 .setContentTitle(context.getResources().getString(R.string.app_name))
                 .setContentText(text)
                 .setContentIntent(resultPendingIntent)
+                .setSound(alarmSound)
                 .setAutoCancel(true)
-                .setFullScreenIntent(resultPendingIntent, false)
+                .setPriority(1)
                 .setLights(Color.RED, 100, 600);
         Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
