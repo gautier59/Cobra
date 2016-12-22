@@ -87,8 +87,9 @@ public class LocalisationFragment extends CobraFragment {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFirst = true;
-                sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
+                if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+                    locFirst = true;
+                }
             }
         });
 
@@ -103,10 +104,11 @@ public class LocalisationFragment extends CobraFragment {
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFirst = false;
-                run = true;
-                sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
-                launchSearch();
+                if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+                    locFirst = false;
+                    run = true;
+                    launchSearch();
+                }
             }
         });
 
@@ -159,8 +161,9 @@ public class LocalisationFragment extends CobraFragment {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 if (run) {
-                    sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
-                    launchSearch();
+                    if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+                        launchSearch();
+                    }
                 }
             }
         }, timeSms);

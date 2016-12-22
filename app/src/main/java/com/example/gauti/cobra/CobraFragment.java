@@ -47,12 +47,14 @@ public class CobraFragment extends Fragment {
         builderNoPhone.setNegativeButton("Annuler", null);
     }
 
-    protected void sendSMSMessage(String message) {
+    protected boolean sendSMSMessage(String message) {
+        boolean numPhoneIsSave = false;
         String phoneNo = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
         if (phoneNo != null) {
             Log.i("Send SMS", message + " to " + phoneNo);
 
             try {
+                numPhoneIsSave = true;
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(phoneNo, null, message, null, null);
                 Toast.makeText(getActivity().getApplicationContext(), "SMS envoyé", Toast.LENGTH_LONG).show();
@@ -61,7 +63,9 @@ public class CobraFragment extends Fragment {
                 e.printStackTrace();
             }
         } else {
+            numPhoneIsSave = false;
             builderNoPhone.create().show();
         }
+        return numPhoneIsSave;
     }
 }
