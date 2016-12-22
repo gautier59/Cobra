@@ -27,14 +27,12 @@ public class HomeFragment extends CobraFragment {
 
     private Button btn_localisation;
     private TextView tv_name;
-    private ImageView iv_picture;
     private ImageButton btn_lock;
     private ImageButton btn_unlock;
 
     private NavigationView navigationView;
     private static HomeFragment inst;
 
-    private String mUrlImg;
     private String mName = "";
 
     public static HomeFragment getInstance() {
@@ -48,7 +46,6 @@ public class HomeFragment extends CobraFragment {
 
         btn_localisation = (Button) view.findViewById(R.id.btn_home_localiser);
         tv_name = (TextView) view.findViewById(R.id.tv_name);
-        iv_picture = (ImageView) view.findViewById(R.id.iv_home_picture);
         btn_lock = (ImageButton) view.findViewById(R.id.btn_lock);
         btn_unlock = (ImageButton) view.findViewById(R.id.btn_unlock);
         return view;
@@ -57,9 +54,7 @@ public class HomeFragment extends CobraFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if ((ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture() != null)
-                && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)) {
-            mUrlImg = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsPicture();
+        if ((ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)) {
             mName = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName();
 
             refresh();
@@ -107,14 +102,6 @@ public class HomeFragment extends CobraFragment {
     private void refresh() {
         if (mName != null) {
             tv_name.setText(mName);
-        }
-
-        if (mUrlImg != null && !mUrlImg.equals("")) {
-            Picasso.with(getActivity()).load(mUrlImg).fit().centerInside().into(iv_picture);
-        } else {
-            int paddingPicture = getActivity().getResources().getDimensionPixelSize(R.dimen.padding_picture_home);
-            iv_picture.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            iv_picture.setPadding(paddingPicture, paddingPicture, paddingPicture, paddingPicture);
         }
     }
 

@@ -17,20 +17,11 @@
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:src="@drawable/logo_cobra" />
 
-        <ImageView
-            android:id="@+id/iv_home_picture"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/tv_name"
-            android:layout_below="@+id/iv_logo"
-            android:background="@color/colorPrimary"
-            android:padding="@dimen/padding_picture_home" />
-
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/ll_lock_unlock"
+            android:layout_below="@+id/iv_logo"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:gravity="center_horizontal"
@@ -40,7 +31,7 @@
             android:id="@+id/ll_lock_unlock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/btn_home_localiser"
+            android:layout_centerInParent="true"
             android:orientation="horizontal">
 
             <ImageButton
@@ -69,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="64dp"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"

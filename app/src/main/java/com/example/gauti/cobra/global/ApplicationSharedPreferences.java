@@ -15,7 +15,6 @@ public class ApplicationSharedPreferences {
 
     private static final String PREFS_NAME = "CorbaAppPreferences";
 
-    private static final String SETTINGS_PICTURE = "settingsPicture";
     private static final String SETTINGS_NAME = "settingsName";
     private static final String SETTINGS_NUMERO = "settingsNumero";
     private static final String SETTINGS_DELAI = "settingsDelai";
@@ -47,15 +46,6 @@ public class ApplicationSharedPreferences {
 
     // Public methods
     // ---------------------------------------------------------------------------------------------
-    public String getSettingsPicture() {
-        return applicationSharedPreferences.getString(SETTINGS_PICTURE, null);
-    }
-
-    public void setSettingsPicture(String urlPicture) {
-        editor.putString(SETTINGS_PICTURE, urlPicture);
-        editor.commit();
-    }
-
     public String getSettingsNumero() {
         return applicationSharedPreferences.getString(SETTINGS_NUMERO, null);
     }
