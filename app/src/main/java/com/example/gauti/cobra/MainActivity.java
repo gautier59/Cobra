@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent) {
         bundle = intent.getExtras();
-        if (bundle != null) {
+        if (bundle != null && bundle.getString(DATE) != null) {
             if ((ApplicationSharedPreferences.getInstance(this).getDateSms().isEmpty())
                     || (!ApplicationSharedPreferences.getInstance(this).getDateSms().equals(bundle.getString(DATE)))) {
                 onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_localisation));
