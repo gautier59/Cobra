@@ -26,6 +26,10 @@ public class CobraFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.SEND_SMS}, 1);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
         builderNoPhone = new AlertDialog.Builder(getActivity());
         builderNoPhone.setTitle("Attention !");
         builderNoPhone.setMessage("Veuillez entrer le numéro de téléphone du traceur.");
@@ -41,18 +45,16 @@ public class CobraFragment extends Fragment {
             }
         });
         builderNoPhone.setNegativeButton("Annuler", null);
-
-        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.SEND_SMS}, 1);
-        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
     }
 
-    protected void sendSMSMessage(String message) {
+    protected boolean sendSMSMessage(String message) {
+        boolean numPhoneIsSave = false;
         String phoneNo = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero();
         if (phoneNo != null) {
             Log.i("Send SMS", message + " to " + phoneNo);
 
             try {
+                numPhoneIsSave = true;
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(phoneNo, null, message, null, null);
                 Toast.makeText(getActivity().getApplicationContext(), "SMS envoyé", Toast.LENGTH_LONG).show();
@@ -61,7 +63,9 @@ public class CobraFragment extends Fragment {
                 e.printStackTrace();
             }
         } else {
+            numPhoneIsSave = false;
             builderNoPhone.create().show();
         }
+        return numPhoneIsSave;
     }
 }

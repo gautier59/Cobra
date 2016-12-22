@@ -3,6 +3,7 @@ package com.example.gauti.cobra;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,12 +51,20 @@ public class LocalisationFragment extends CobraFragment {
 
         timeSms = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         try {
             if (googleMap == null) {
+                Log.i("GOOGLEMAP", "START");
                 googleMap = ((MapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
             }
 
             if (googleMap != null) {
+                Log.i("GOOGLEMAP", "START2");
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 googleMap.getUiSettings().setZoomGesturesEnabled(true);
                 googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -65,17 +74,23 @@ public class LocalisationFragment extends CobraFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return view;
-    }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null && getArguments().getString(MainActivity.DATE) != null) {
+            ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setDateSms(getArguments().getString(MainActivity.DATE));
+            Double latitude = getArguments().getDouble(MainActivity.LATITUDE, 0);
+            Double longitude = getArguments().getDouble(MainActivity.LONGITUDE, 0);
+            String speed = getArguments().getString(MainActivity.SPEED);
+            String date = getArguments().getString(MainActivity.DATE);
+            locFirst = true;
+            addMarker(latitude, longitude, speed, date);
+        }
+
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFirst = true;
-                sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
+                if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+                    locFirst = true;
+                }
             }
         });
 
@@ -90,10 +105,11 @@ public class LocalisationFragment extends CobraFragment {
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locFirst = false;
-                run = true;
-                sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
-                launchSearch();
+                if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+                    locFirst = false;
+                    run = true;
+                    launchSearch();
+                }
             }
         });
 
@@ -104,7 +120,7 @@ public class LocalisationFragment extends CobraFragment {
             case 1:
                 timeSms = 45000;
                 break;
-            case 2 :
+            case 2:
                 timeSms = 60000;
                 break;
             case 3:
@@ -119,27 +135,36 @@ public class LocalisationFragment extends CobraFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (googleMap != null) {
+            Log.i("GOOGLEMAP", "STOP");
+            getChildFragmentManager().beginTransaction().remove(getChildFragmentManager().findFragmentById(R.id.map)).commitAllowingStateLoss();
+            googleMap.clear();
+            googleMap = null;
+        }
+        mMarkers.clear();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         inst = this;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (googleMap != null) {
-            getChildFragmentManager().beginTransaction().remove(getChildFragmentManager().findFragmentById(R.id.map)).commit();
-            googleMap = null;
-        }
-        mMarkers.clear();
+    public void onStop() {
+        super.onStop();
+        inst = null;
     }
 
     private void launchSearch() {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 if (run) {
-                    sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()));
-                    launchSearch();
+                    if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+                        launchSearch();
+                    }
                 }
             }
         }, timeSms);
@@ -149,59 +174,42 @@ public class LocalisationFragment extends CobraFragment {
         googleMap.clear();
         points = new ArrayList<LatLng>();
         polyLineOptions = new PolylineOptions();
+
+        LatLng point = new LatLng(latitude, longitude);
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title(Integer.toString(etapes) + " : " + speed + " - " + date);
+        markerOptions.visible(true);
+        markerOptions.position(point);
+
+        //zoom de la caméra sur la position qu'on désire afficher
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
+        //animation le zoom toute les 2000ms
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                tv_marker_info.setText(marker.getTitle());
+            }
+        });
+
         if (locFirst) {
-            LatLng point = new LatLng(latitude, longitude);
-
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.title(Integer.toString(etapes) + " : " + speed + " - " + date);
-            markerOptions.visible(true);
-            markerOptions.position(point);
-
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
 
             //ajout du marqueur sur la carte
             googleMap.addMarker(markerOptions);
-
-            //ajout du marqueur sur la carte
-            //googleMap.addMarker(markerOptions);
-            //zoom de la caméra sur la position qu'on désire afficher
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
-            //animation le zoom toute les 2000ms
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
-            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    tv_marker_info.setText(marker.getTitle());
-                }
-            });
         } else {
-            LatLng point = new LatLng(latitude, longitude);
             for (int i = 0; i < mMarkers.size(); i++) {
                 googleMap.addMarker(new MarkerOptions().position(mMarkers.get(i).getPosition()).title(mMarkers.get(i).getTitle()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                 points.add(mMarkers.get(i).getPosition());
             }
             points.add(point);
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.title(Integer.toString(etapes) + " : " + speed + " - " + date);
-            markerOptions.visible(true);
-            markerOptions.position(point);
 
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
             //ajout du marqueur sur la carte
             mMarkers.add(googleMap.addMarker(markerOptions));
-            //zoom de la caméra sur la position qu'on désire afficher
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
-            //animation le zoom toute les 2000ms
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
-            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    tv_marker_info.setText(marker.getTitle());
-                }
-            });
 
             etapes++;
 
@@ -210,5 +218,9 @@ public class LocalisationFragment extends CobraFragment {
             polyLineOptions.color(Color.BLUE);
             googleMap.addPolyline(polyLineOptions);
         }
+    }
+
+    public void setLocFirst(boolean locFirst) {
+        this.locFirst = locFirst;
     }
 }

@@ -122,7 +122,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             public void onClick(View v) {
                 ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingsPicture(mUrlImg);
                 ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingName(et_name.getText().toString());
-                ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingsNumero(et_number.getText().toString());
+                ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingsNumero(et_number.getText().toString().replaceFirst("0","+33"));
 
                 navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
                 navigationView.getMenu().getItem(0).setChecked(true);

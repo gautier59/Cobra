@@ -27,4 +27,6 @@
     <string name="sms_unlock">RELAY,0#</string>
 
     <string name="api_debug_key">AIzaSyAs-ilFxp95_27jNyIFf9YcTCAjbsRAVG8</string>
+
+    <string name="notification_text">ALARME ALERTE</string>
 </resources>
