@@ -18,7 +18,9 @@ public class ApplicationSharedPreferences {
     private static final String SETTINGS_PICTURE = "settingsPicture";
     private static final String SETTINGS_NAME = "settingsName";
     private static final String SETTINGS_NUMERO = "settingsNumero";
-    private static final String SETTINGS_DELAI = "settings_delai";
+    private static final String SETTINGS_DELAI = "settingsDelai";
+
+    private static final String DATE_SMS = "dateSms";
 
 
     // Private fields
@@ -78,6 +80,15 @@ public class ApplicationSharedPreferences {
 
     public void setSettingDelai(int delai) {
         editor.putInt(SETTINGS_DELAI, delai);
+        editor.commit();
+    }
+
+    public String getDateSms() {
+        return applicationSharedPreferences.getString(DATE_SMS, "");
+    }
+
+    public void setDateSms(String dateSms) {
+        editor.putString(DATE_SMS, dateSms);
         editor.commit();
     }
 }

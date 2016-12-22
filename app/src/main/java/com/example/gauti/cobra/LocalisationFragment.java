@@ -76,6 +76,7 @@ public class LocalisationFragment extends CobraFragment {
         }
 
         if (getArguments() != null && getArguments().getString(MainActivity.DATE) != null) {
+            ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setDateSms(getArguments().getString(MainActivity.DATE));
             Double latitude = getArguments().getDouble(MainActivity.LATITUDE, 0);
             Double longitude = getArguments().getDouble(MainActivity.LONGITUDE, 0);
             String speed = getArguments().getString(MainActivity.SPEED);

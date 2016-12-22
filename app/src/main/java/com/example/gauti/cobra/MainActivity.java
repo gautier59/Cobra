@@ -1,5 +1,6 @@
 package com.example.gauti.cobra;
 
+import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+
+import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -61,7 +64,10 @@ public class MainActivity extends AppCompatActivity
     protected void onNewIntent(Intent intent) {
         bundle = intent.getExtras();
         if (bundle != null) {
-            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_localisation));
+            if ((ApplicationSharedPreferences.getInstance(this).getDateSms().isEmpty())
+                    || (!ApplicationSharedPreferences.getInstance(this).getDateSms().equals(bundle.getString(DATE)))) {
+                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_localisation));
+            }
         }
     }
 
