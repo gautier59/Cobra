@@ -3,6 +3,7 @@ package com.example.gauti.cobra;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -246,6 +247,14 @@ public class LocalisationFragment extends CobraFragment {
 
     public void setLocFirst(boolean locFirst) {
         this.locFirst = locFirst;
+    }
+
+    private void setHistorique() {
+        LinearLayoutManager teamLinearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        teamLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRvHistory.setLayoutManager(teamLinearLayoutManager);
+        //POIAdapter poiAdapter = new POIAdapter(getActivity(), map.getPoi());
+        //mRvHistory.setAdapter(poiAdapter);
     }
 
     // EventBus
