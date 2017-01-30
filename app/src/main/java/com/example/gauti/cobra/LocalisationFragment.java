@@ -3,10 +3,13 @@ package com.example.gauti.cobra;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,13 +22,17 @@ import com.google.android.gms.maps.model.*;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
+
 public class LocalisationFragment extends CobraFragment {
 
+    // Private fields
+    // --------------------------------------------------------------------------------------------
+    protected boolean mIsShowingLegend;
     private static LocalisationFragment inst;
-    private GoogleMap googleMap;
     private int etapes = 0;
-    private ImageButton btn_search, btn_stop, btn_play;
-    private TextView tv_marker_info;
     private boolean locFirst = false;
     private boolean run = false;
     private int timeSms;
@@ -35,6 +42,17 @@ public class LocalisationFragment extends CobraFragment {
 
     private ArrayList<com.google.android.gms.maps.model.Marker> mMarkers = new ArrayList<>();
 
+    // Views
+    // --------------------------------------------------------------------------------------------
+    @Bind(R.id.rv_history)
+    protected RecyclerView mRvHistory;
+
+    private GoogleMap googleMap;
+    private ImageButton btn_search, btn_stop, btn_play;
+    private TextView tv_marker_info;
+
+    // Life cycle
+    // --------------------------------------------------------------------------------------------
     public static LocalisationFragment getInstance() {
         if (inst == null) {
             return new LocalisationFragment();
@@ -46,6 +64,8 @@ public class LocalisationFragment extends CobraFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_localisation, container, false);
+        ButterKnife.bind(this, view);
+        EventBus.getDefault().register(this);
 
         btn_search = (ImageButton) view.findViewById(R.id.btn_search);
         btn_stop = (ImageButton) view.findViewById(R.id.btn_stop);
@@ -147,6 +167,7 @@ public class LocalisationFragment extends CobraFragment {
             googleMap = null;
         }
         mMarkers.clear();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -225,5 +246,52 @@ public class LocalisationFragment extends CobraFragment {
 
     public void setLocFirst(boolean locFirst) {
         this.locFirst = locFirst;
+    }
+
+    // EventBus
+    // --------------------------------------------------------------------------------------------
+    public void onEvent(MainActivity.HistoryClickEvent event) {
+        if (!mIsShowingLegend) {
+            Animation slideUp = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
+            slideUp.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    mRvHistory.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            mRvHistory.startAnimation(slideUp);
+            mIsShowingLegend = true;
+        } else {
+            Animation slideDown = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
+            slideDown.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mRvHistory.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            mRvHistory.startAnimation(slideDown);
+            mIsShowingLegend = false;
+        }
+
     }
 }

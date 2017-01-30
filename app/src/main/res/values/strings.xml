@@ -29,4 +29,6 @@
 
     <string name="popover_no_phone_title">Attention !</string>
     <string name="popover_no_phone_text">Veuillez entrer le numéro de téléphone du traceur pour utiliser cette fonctionnalité.</string>
+
+    <string name="actionbar_history">Historique</string>
 </resources>
