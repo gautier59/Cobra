@@ -15,12 +15,6 @@
     <string name="settings_delai">Délai de renvoi du SMS : </string>
     <string name="settings_btn_sauv">Sauvegarder</string>
 
-    <string name="popover_photo">Photo</string>
-    <string name="popover_cancel">Annuler</string>
-    <string name="popover_takePicture">Prendre une photo</string>
-    <string name="popover_importPicture">Importer une photo\n\n</string>
-    <string name="settings_error_create_file">Erreur ! Fichier non créé</string>
-
     <string name="sms_url">URL#</string>
     <string name="sms_where">WHERE#</string>
     <string name="sms_lock">RELAY,1#</string>
