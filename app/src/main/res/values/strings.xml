@@ -29,4 +29,7 @@
     <string name="api_debug_key">AIzaSyAs-ilFxp95_27jNyIFf9YcTCAjbsRAVG8</string>
 
     <string name="notification_text">ALARME ALERTE</string>
+    
+    <string name="permission_no_granted_title">Permission non accepté</string>
+    <string name="permission_no_granted_text">L\'application va se fermer car vous n\'avez pas accepté les permissions.</string>
 </resources>
