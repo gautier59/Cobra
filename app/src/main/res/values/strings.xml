@@ -26,4 +26,7 @@
     
     <string name="permission_no_granted_title">Permission non accepté</string>
     <string name="permission_no_granted_text">L\'application va se fermer car vous n\'avez pas accepté les permissions.</string>
+
+    <string name="popover_no_phone_title">Attention !</string>
+    <string name="popover_no_phone_text">Veuillez entrer le numéro de téléphone du traceur pour utiliser cette fonctionnalité.</string>
 </resources>

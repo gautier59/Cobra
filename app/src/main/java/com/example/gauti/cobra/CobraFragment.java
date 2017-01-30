@@ -25,9 +25,9 @@ public class CobraFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         builderNoPhone = new AlertDialog.Builder(getActivity());
-        builderNoPhone.setTitle("Attention !");
-        builderNoPhone.setMessage("Veuillez entrer le numéro de téléphone du traceur.");
-        builderNoPhone.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builderNoPhone.setTitle(getResources().getString(R.string.popover_no_phone_title));
+        builderNoPhone.setMessage(getResources().getString(R.string.popover_no_phone_text));
+        builderNoPhone.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
@@ -38,7 +38,6 @@ public class CobraFragment extends Fragment {
                 transaction.commit();
             }
         });
-        builderNoPhone.setNegativeButton("Annuler", null);
     }
 
     protected boolean sendSMSMessage(String message) {

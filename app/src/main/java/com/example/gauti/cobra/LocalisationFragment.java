@@ -36,6 +36,9 @@ public class LocalisationFragment extends CobraFragment {
     private ArrayList<com.google.android.gms.maps.model.Marker> mMarkers = new ArrayList<>();
 
     public static LocalisationFragment getInstance() {
+        if (inst == null) {
+            return new LocalisationFragment();
+        }
         return inst;
     }
 

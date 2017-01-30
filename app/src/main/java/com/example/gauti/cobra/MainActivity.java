@@ -139,8 +139,13 @@ public class MainActivity extends AppCompatActivity
 
     private void launchFirstFragment(boolean permissionGranted) {
         if (permissionGranted) {
-            navigationView.getMenu().getItem(0).setChecked(true);
-            onNavigationItemSelected(navigationView.getMenu().getItem(0));
+            if (ApplicationSharedPreferences.getInstance(this.getApplicationContext()).getSettingsNumero() != null) {
+                navigationView.getMenu().getItem(0).setChecked(true);
+                onNavigationItemSelected(navigationView.getMenu().getItem(0));
+            } else {
+                navigationView.getMenu().getItem(2).setChecked(true);
+                onNavigationItemSelected(navigationView.getMenu().getItem(2));
+            }
         } else {
             new AlertDialog.Builder(this)
                     .setTitle(getResources().getString(R.string.permission_no_granted_title))

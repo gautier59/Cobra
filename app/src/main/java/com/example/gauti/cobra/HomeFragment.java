@@ -36,6 +36,9 @@ public class HomeFragment extends CobraFragment {
     private String mName = "";
 
     public static HomeFragment getInstance() {
+        if (inst == null) {
+            return new HomeFragment();
+        }
         return inst;
     }
 
