@@ -1,12 +1,7 @@
 package com.example.gauti.cobra;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,20 +14,16 @@ import android.widget.Spinner;
 
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+import butterknife.Bind;
+import butterknife.OnClick;
+
+public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     // Private fields
     // --------------------------------------------------------------------------------------------
-    private EditText et_name;
-    private EditText et_number;
-    private Button btn_sauv;
-    private Spinner spiDelai;
-
     private String mName;
     private String mNumero;
     private int mDelai;
@@ -41,14 +32,21 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
     // Views
     // --------------------------------------------------------------------------------------------
+    @Bind(R.id.et_name)
+    EditText mEtName;
+
+    @Bind(R.id.et_number)
+    EditText mEtNumber;
+
+    @Bind(R.id.spinnerTime)
+    Spinner mSpiDelai;
+
+    // Life cycle
+    // --------------------------------------------------------------------------------------------
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        et_name = (EditText) view.findViewById(R.id.et_name);
-        et_number = (EditText) view.findViewById(R.id.et_number);
-        btn_sauv = (Button) view.findViewById(R.id.btn_settings_sauv);
-        spiDelai = (Spinner) view.findViewById(R.id.spinnerTime);
 
         return view;
     }
@@ -57,23 +55,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        btn_sauv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingName(et_name.getText().toString());
-                ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingsNumero(et_number.getText().toString().replaceFirst("0","+33"));
-
-                navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                navigationView.getMenu().getItem(0).setChecked(true);
-
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container, new HomeFragment());
-                transaction.commit();
-            }
-        });
-
         // Spinner click listener
-        spiDelai.setOnItemSelectedListener(this);
+        mSpiDelai.setOnItemSelectedListener(this);
 
         // Spinner Drop down elements
         List<String> time = new ArrayList<String>();
@@ -90,7 +73,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // attaching data adapter to spinner
-        spiDelai.setAdapter(dataAdapter);
+        mSpiDelai.setAdapter(dataAdapter);
 
         if ((ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsName() != null)
                 && (ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsNumero() != null)) {
@@ -102,20 +85,30 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         }
     }
 
+    @OnClick(R.id.btn_settings_sauv)
+    void onClickSave() {
+        ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingName(mEtName.getText().toString());
+        ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setSettingsNumero(mEtNumber.getText().toString().replaceFirst("0", "+33"));
+
+        navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
+        ((MainActivity) getActivity()).onNavigationItemSelected(navigationView.getMenu().getItem(0));
+    }
+
     private void updateTextAndTelNumber() {
         if (mName != null) {
-            et_name.setText(mName);
+            mEtName.setText(mName);
         } else {
-            et_name.setText("");
+            mEtName.setText("");
         }
 
         if (mNumero != null) {
-            et_number.setText(mNumero);
+            mEtNumber.setText(mNumero);
         } else {
-            et_number.setText("");
+            mEtNumber.setText("");
         }
 
-        spiDelai.setSelection(mDelai);
+        mSpiDelai.setSelection(mDelai);
     }
 
     // Listener

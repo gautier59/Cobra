@@ -204,7 +204,9 @@ public class MainActivity extends AppCompatActivity
     void showOrHideLegend() {
         EventBus.getDefault().post(new HistoryClickEvent());
     }
+
     // EventBus
     // --------------------------------------------------------------------------------------------
-    public class HistoryClickEvent {}
+    public class HistoryClickEvent {
+    }
 }

@@ -1,8 +1,11 @@
 package com.example.gauti.cobra;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
 public class LocalisationFragment extends CobraFragment {
@@ -43,14 +47,15 @@ public class LocalisationFragment extends CobraFragment {
 
     private ArrayList<com.google.android.gms.maps.model.Marker> mMarkers = new ArrayList<>();
 
+    private GoogleMap googleMap;
+
     // Views
     // --------------------------------------------------------------------------------------------
     @Bind(R.id.rv_history)
     protected RecyclerView mRvHistory;
 
-    private GoogleMap googleMap;
-    private ImageButton btn_search, btn_stop, btn_play;
-    private TextView tv_marker_info;
+    @Bind(R.id.tv_marker_info)
+    TextView mTvMarkerInfo;
 
     // Life cycle
     // --------------------------------------------------------------------------------------------
@@ -67,11 +72,6 @@ public class LocalisationFragment extends CobraFragment {
         View view = inflater.inflate(R.layout.fragment_localisation, container, false);
         ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
-
-        btn_search = (ImageButton) view.findViewById(R.id.btn_search);
-        btn_stop = (ImageButton) view.findViewById(R.id.btn_stop);
-        btn_play = (ImageButton) view.findViewById(R.id.btn_play);
-        tv_marker_info = (TextView) view.findViewById(R.id.tv_marker_info);
 
         timeSms = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
 
@@ -93,6 +93,26 @@ public class LocalisationFragment extends CobraFragment {
                 googleMap.getUiSettings().setZoomGesturesEnabled(true);
                 googleMap.getUiSettings().setZoomControlsEnabled(true);
                 googleMap.setMyLocationEnabled(true);
+
+                final GoogleMap mGoogleMap = googleMap;
+                googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                    @Override
+                    public boolean onMyLocationButtonClick() {
+                        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                            new AlertDialog.Builder(getActivity())
+                                    .setTitle(getResources().getString(R.string.popover_location_no_activated_title))
+                                    .setMessage(getResources().getString(R.string.popover_location_no_activated_text))
+                                    .setPositiveButton(android.R.string.ok, null)
+                                    .show();
+                        } else {
+                            LatLng loc = new LatLng(mGoogleMap.getMyLocation().getLatitude(), mGoogleMap.getMyLocation().getLongitude());
+                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
+                            mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                        }
+                        return true;
+                    }
+                });
             }
 
         } catch (Exception e) {
@@ -108,34 +128,6 @@ public class LocalisationFragment extends CobraFragment {
             locFirst = true;
             addMarker(latitude, longitude, speed, date);
         }
-
-        btn_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
-                    locFirst = true;
-                }
-            }
-        });
-
-        btn_stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                locFirst = false;
-                run = false;
-            }
-        });
-
-        btn_play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
-                    locFirst = false;
-                    run = true;
-                    launchSearch();
-                }
-            }
-        });
 
         switch (timeSms) {
             case 0:
@@ -183,6 +175,28 @@ public class LocalisationFragment extends CobraFragment {
         inst = null;
     }
 
+    @OnClick(R.id.btn_search)
+    void onClickSearch() {
+        if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+            locFirst = true;
+        }
+    }
+
+    @OnClick(R.id.btn_stop)
+    void onClickStop() {
+        locFirst = false;
+        run = false;
+    }
+
+    @OnClick(R.id.btn_play)
+    void onClickPlay() {
+        if (sendSMSMessage(getResources().getString(EnumSms.WHERE.getSms()))) {
+            locFirst = false;
+            run = true;
+            launchSearch();
+        }
+    }
+
     private void launchSearch() {
         new Handler().postDelayed(new Runnable() {
             public void run() {
@@ -215,7 +229,7 @@ public class LocalisationFragment extends CobraFragment {
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                tv_marker_info.setText(marker.getTitle());
+                mTvMarkerInfo.setText(marker.getTitle());
             }
         });
 

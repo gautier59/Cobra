@@ -17,9 +17,13 @@ import com.example.gauti.cobra.global.ApplicationSharedPreferences;
  */
 public class CobraFragment extends Fragment {
 
+    // Private fields
+    // --------------------------------------------------------------------------------------------
     AlertDialog.Builder builderNoPhone;
-    private NavigationView navigationView;
+    private NavigationView mNavigationView;
 
+    // Life cycle
+    // --------------------------------------------------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +34,8 @@ public class CobraFragment extends Fragment {
         builderNoPhone.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                navigationView.getMenu().getItem(2).setChecked(true);
+                mNavigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+                mNavigationView.getMenu().getItem(2).setChecked(true);
 
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, new SettingsFragment());
