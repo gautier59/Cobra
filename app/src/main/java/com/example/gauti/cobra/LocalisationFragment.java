@@ -1,6 +1,8 @@
 package com.example.gauti.cobra;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -103,12 +105,20 @@ public class LocalisationFragment extends CobraFragment {
                             new AlertDialog.Builder(getActivity())
                                     .setTitle(getResources().getString(R.string.popover_location_no_activated_title))
                                     .setMessage(getResources().getString(R.string.popover_location_no_activated_text))
-                                    .setPositiveButton(android.R.string.ok, null)
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.cancel, null)
                                     .show();
                         } else {
-                            LatLng loc = new LatLng(mGoogleMap.getMyLocation().getLatitude(), mGoogleMap.getMyLocation().getLongitude());
-                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
-                            mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                            if (mGoogleMap.getMyLocation() != null) {
+                                LatLng loc = new LatLng(mGoogleMap.getMyLocation().getLatitude(), mGoogleMap.getMyLocation().getLongitude());
+                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
+                                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                            }
                         }
                         return true;
                     }
