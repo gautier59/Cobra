@@ -1,4 +1,4 @@
-package com.example.gauti.cobra;
+package com.example.gauti.cobra.fragments;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -10,6 +10,7 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 /**

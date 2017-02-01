@@ -1,4 +1,4 @@
-package com.example.gauti.cobra;
+package com.example.gauti.cobra.fragments;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gauti.cobra.MainActivity;
+import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.enumeration.EnumSms;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
@@ -91,7 +93,7 @@ public class HomeFragment extends CobraFragment {
         }
     }
 
-    protected void lockSuccess(boolean lock) {
+    public void lockSuccess(boolean lock) {
         String message = null;
         if (lock) {
             message = "Voiture vérouillé";

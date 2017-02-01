@@ -20,6 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.gauti.cobra.fragments.HomeFragment;
+import com.example.gauti.cobra.fragments.LocalisationFragment;
+import com.example.gauti.cobra.fragments.SettingsFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 import butterknife.Bind;

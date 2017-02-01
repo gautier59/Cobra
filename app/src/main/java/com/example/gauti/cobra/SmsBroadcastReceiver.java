@@ -14,6 +14,8 @@ import android.support.v7.app.NotificationCompat;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import com.example.gauti.cobra.fragments.HomeFragment;
+import com.example.gauti.cobra.fragments.LocalisationFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 import java.text.DateFormat;

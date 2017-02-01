@@ -1,4 +1,4 @@
-package com.example.gauti.cobra;
+package com.example.gauti.cobra.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,9 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.gauti.cobra.MainActivity;
+import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.enumeration.EnumSms;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.google.android.gms.maps.CameraUpdateFactory;

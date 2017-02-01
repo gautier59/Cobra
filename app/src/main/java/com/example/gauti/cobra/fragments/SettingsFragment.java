@@ -1,4 +1,4 @@
-package com.example.gauti.cobra;
+package com.example.gauti.cobra.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.gauti.cobra.MainActivity;
+import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 import java.util.ArrayList;
