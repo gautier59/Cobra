@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.example.gauti.cobra.fragments.HomeFragment;
 import com.example.gauti.cobra.fragments.LocalisationFragment;
 import com.example.gauti.cobra.fragments.SettingsFragment;
+import com.example.gauti.cobra.fragments.history.HistoryFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 import butterknife.Bind;
@@ -133,6 +134,10 @@ public class MainActivity extends AppCompatActivity
             fragment = new SettingsFragment();
             showHistoryButton(false);
             mToolbar.setTitle(getResources().getString(R.string.menu_settings));
+        } else if (id == R.id.nav_history) {
+            fragment = new HistoryFragment();
+            showHistoryButton(false);
+            mToolbar.setTitle(getResources().getString(R.string.menu_history));
         }
 
         if (bundle != null) {

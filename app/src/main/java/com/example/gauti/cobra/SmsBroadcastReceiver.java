@@ -17,6 +17,8 @@ import android.util.Log;
 import com.example.gauti.cobra.fragments.HomeFragment;
 import com.example.gauti.cobra.fragments.LocalisationFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
+import com.example.gauti.cobra.model.Alerte;
+import com.example.gauti.cobra.provider.AlerteProvider;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,7 +51,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
             for (int i = 0; i < sms.length; ++i) {
                 SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
-                Log.i("NUM sauv: ",ApplicationSharedPreferences.getInstance(context).getSettingsNumero() + " - Num recu:" +smsMessage.getOriginatingAddress());
+                Log.i("NUM sauv: ", ApplicationSharedPreferences.getInstance(context).getSettingsNumero() + " - Num recu:" + smsMessage.getOriginatingAddress());
                 if (smsMessage.getOriginatingAddress().equals(ApplicationSharedPreferences.getInstance(context).getSettingsNumero())) {
                     smsBody = smsMessage.getMessageBody().toString();
                     address = smsMessage.getOriginatingAddress();
@@ -100,7 +102,10 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             instLoc.addMarker(latitude, longitude, speed, date);
         } else {
             addNotification(context.getResources().getString(R.string.notification_text) + " - " + date, latitude, longitude, speed, date);
+
         }
+        Alerte alerte = new Alerte(speed, date, latitude, longitude);
+        AlerteProvider.setAlerte(context, alerte);
     }
 
     private void addNotification(String text, Double latitude, Double longitude, String speed, String date) {

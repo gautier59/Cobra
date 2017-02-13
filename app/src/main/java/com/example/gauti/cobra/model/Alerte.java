@@ -14,7 +14,7 @@ public class Alerte {
     public int id;
 
     @DatabaseField
-    public String title;
+    public String speed;
 
     @DatabaseField
     public String date;
@@ -24,4 +24,30 @@ public class Alerte {
 
     @DatabaseField
     public Double longitude;
+
+    public Alerte(String speed, String date, Double latitude, Double longitude) {
+        this.speed = speed;
+        this.date = date;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Alerte() {
+    }
+
+    public String getSpeed() {
+        return speed;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
 }

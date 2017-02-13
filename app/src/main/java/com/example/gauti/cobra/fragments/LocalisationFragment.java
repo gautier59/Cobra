@@ -1,12 +1,15 @@
 package com.example.gauti.cobra.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +28,8 @@ import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
 
 import java.util.ArrayList;
@@ -34,7 +39,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
-public class LocalisationFragment extends CobraFragment {
+public class LocalisationFragment extends CobraFragment implements OnMapReadyCallback {
 
     // Private fields
     // --------------------------------------------------------------------------------------------
@@ -51,6 +56,8 @@ public class LocalisationFragment extends CobraFragment {
     private ArrayList<com.google.android.gms.maps.model.Marker> mMarkers = new ArrayList<>();
 
     private GoogleMap googleMap;
+    private MapView mapView;
+
 
     // Views
     // --------------------------------------------------------------------------------------------
@@ -78,57 +85,20 @@ public class LocalisationFragment extends CobraFragment {
 
         timeSms = ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).getSettingsDelai();
 
+        if (googleMap == null) {
+            Log.i("GOOGLEMAP", "START");
+            mapView = (MapView) view.findViewById(R.id.map);
+            mapView.onCreate(savedInstanceState);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
+
         return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        try {
-            if (googleMap == null) {
-                Log.i("GOOGLEMAP", "START");
-                googleMap = ((MapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
-            }
-
-            if (googleMap != null) {
-                Log.i("GOOGLEMAP", "START2");
-                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                googleMap.getUiSettings().setZoomGesturesEnabled(true);
-                googleMap.getUiSettings().setZoomControlsEnabled(true);
-                googleMap.setMyLocationEnabled(true);
-
-                final GoogleMap mGoogleMap = googleMap;
-                googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-                    @Override
-                    public boolean onMyLocationButtonClick() {
-                        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle(getResources().getString(R.string.popover_location_no_activated_title))
-                                    .setMessage(getResources().getString(R.string.popover_location_no_activated_text))
-                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                        }
-                                    })
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .show();
-                        } else {
-                            if (mGoogleMap.getMyLocation() != null) {
-                                LatLng loc = new LatLng(mGoogleMap.getMyLocation().getLatitude(), mGoogleMap.getMyLocation().getLongitude());
-                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
-                                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         if (getArguments() != null && getArguments().getString(MainActivity.DATE) != null) {
             ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setDateSms(getArguments().getString(MainActivity.DATE));
@@ -166,9 +136,10 @@ public class LocalisationFragment extends CobraFragment {
         super.onDestroyView();
         if (googleMap != null) {
             Log.i("GOOGLEMAP", "STOP");
-            getChildFragmentManager().beginTransaction().remove(getChildFragmentManager().findFragmentById(R.id.map)).commitAllowingStateLoss();
+            //getChildFragmentManager().beginTransaction().remove(getChildFragmentManager().findFragmentById(R.id.map)).commitAllowingStateLoss();
             googleMap.clear();
             googleMap = null;
+            mapView.onDestroy();
         }
         mMarkers.clear();
         EventBus.getDefault().unregister(this);
@@ -184,6 +155,48 @@ public class LocalisationFragment extends CobraFragment {
     public void onStop() {
         super.onStop();
         inst = null;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        Log.i("GOOGLEMAP", "START2");
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        }
+
+        final GoogleMap mGoogleMap = googleMap;
+        googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(getResources().getString(R.string.popover_location_no_activated_title))
+                            .setMessage(getResources().getString(R.string.popover_location_no_activated_text))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                } else {
+                    if (mGoogleMap.getMyLocation() != null) {
+                        LatLng loc = new LatLng(mGoogleMap.getMyLocation().getLatitude(), mGoogleMap.getMyLocation().getLongitude());
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
+                        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     @OnClick(R.id.btn_search)

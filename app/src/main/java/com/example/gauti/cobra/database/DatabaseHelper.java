@@ -23,7 +23,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     // --------------------------------------------------------------------------------------------
     private static final String LOG_TAG = DatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "alerte.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Private members
     // --------------------------------------------------------------------------------------------
