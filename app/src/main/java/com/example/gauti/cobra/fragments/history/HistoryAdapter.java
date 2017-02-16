@@ -2,10 +2,12 @@ package com.example.gauti.cobra.fragments.history;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.gauti.cobra.R;
@@ -17,9 +19,9 @@ import java.util.List;
  * Created by mobilefactory on 13/02/2017.
  */
 
-public class AlerteAdapter extends ArrayAdapter<Alerte> {
+public class HistoryAdapter extends ArrayAdapter<Alerte> {
 
-    public AlerteAdapter(Context context, List<Alerte> alertes) {
+    public HistoryAdapter(Context context, List<Alerte> alertes) {
         super(context, 0, alertes);
     }
 
@@ -30,9 +32,9 @@ public class AlerteAdapter extends ArrayAdapter<Alerte> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_alerte, parent, false);
         }
 
-        AlerteViewHolder viewHolder = (AlerteViewHolder) convertView.getTag();
+        HistoryViewHolder viewHolder = (HistoryViewHolder) convertView.getTag();
         if (viewHolder == null) {
-            viewHolder = new AlerteViewHolder();
+            viewHolder = new HistoryViewHolder();
             viewHolder.date = (TextView) convertView.findViewById(R.id.tvDateRow);
             convertView.setTag(viewHolder);
         }
@@ -44,7 +46,18 @@ public class AlerteAdapter extends ArrayAdapter<Alerte> {
         return convertView;
     }
 
-    private class AlerteViewHolder {
+    @Nullable
+    @Override
+    public Alerte getItem(int position) {
+        return super.getItem(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    private class HistoryViewHolder {
         public TextView date;
     }
 }

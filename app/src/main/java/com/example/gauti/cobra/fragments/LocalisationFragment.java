@@ -9,34 +9,39 @@ import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.gauti.cobra.MainActivity;
 import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.enumeration.EnumSms;
+import com.example.gauti.cobra.fragments.history.HistoryAdapter;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
+import com.example.gauti.cobra.model.Alerte;
+import com.example.gauti.cobra.provider.AlerteProvider;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 import de.greenrobot.event.EventBus;
 
 public class LocalisationFragment extends CobraFragment implements OnMapReadyCallback {
@@ -57,12 +62,14 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
 
     private GoogleMap googleMap;
     private MapView mapView;
+    private List<String> mCurrentDate = new LinkedList<String>();
+    private Parcelable stateListView;
 
 
     // Views
     // --------------------------------------------------------------------------------------------
-    @Bind(R.id.rv_history)
-    protected RecyclerView mRvHistory;
+    @Bind(R.id.lv_history)
+    protected ListView mLvHistory;
 
     @Bind(R.id.tv_marker_info)
     TextView mTvMarkerInfo;
@@ -70,9 +77,6 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
     // Life cycle
     // --------------------------------------------------------------------------------------------
     public static LocalisationFragment getInstance() {
-        if (inst == null) {
-            return new LocalisationFragment();
-        }
         return inst;
     }
 
@@ -152,8 +156,8 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         inst = null;
     }
 
@@ -233,6 +237,71 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
         }, timeSms);
     }
 
+    @OnItemClick(R.id.lv_history)
+    public void onItemClick(int position) {
+        int dateFound = -1;
+        List<Alerte> alerteList = AlerteProvider.getAlerte(getActivity());
+        Alerte alerte = alerteList.get(position);
+        if (!mCurrentDate.isEmpty()) {
+            for (int i = 0; i < mCurrentDate.size(); i++) {
+                if (mCurrentDate.get(i).equals(alerte.getDate())) {
+                    dateFound = i;
+                }
+            }
+            if (dateFound != -1) {
+                mCurrentDate.remove(dateFound);
+                deleteMarker(alerte.getDate());
+            } else {
+                mCurrentDate.add(alerte.getDate());
+                addMarker(alerte.getLatitude(), alerte.getLongitude(), alerte.getSpeed(), alerte.getDate());
+            }
+        } else {
+            mCurrentDate.add(alerte.getDate());
+            addMarker(alerte.getLatitude(), alerte.getLongitude(), alerte.getSpeed(), alerte.getDate());
+        }
+    }
+
+    private void deleteMarker(String date) {
+        for (int i = 0; i < mMarkers.size(); i++) {
+            if (mMarkers.get(i).getTitle().contains(date)) {
+                mMarkers.remove(i);
+                addMarkerFromListMarker();
+                etapes--;
+            }
+        }
+    }
+
+    private void addMarkerFromListMarker() {
+        googleMap.clear();
+        points = new ArrayList<LatLng>();
+        polyLineOptions = new PolylineOptions();
+        if (!mMarkers.isEmpty()) {
+            LatLng point = null;
+            for (int i = 0; i < mMarkers.size(); i++) {
+                point = mMarkers.get(0).getPosition();
+                googleMap.addMarker(new MarkerOptions().position(mMarkers.get(i).getPosition()).title(mMarkers.get(i).getTitle()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                points.add(mMarkers.get(i).getPosition());
+            }
+
+            //zoom de la caméra sur la position qu'on désire afficher
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
+            //animation le zoom toute les 2000ms
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
+            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    mTvMarkerInfo.setText(marker.getTitle());
+                }
+            });
+
+            polyLineOptions.addAll(points);
+            polyLineOptions.width(4);
+            polyLineOptions.color(Color.BLUE);
+            googleMap.addPolyline(polyLineOptions);
+        }
+    }
+
     public void addMarker(Double latitude, Double longitude, String speed, String date) {
         googleMap.clear();
         points = new ArrayList<LatLng>();
@@ -244,6 +313,7 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
         markerOptions.title(Integer.toString(etapes) + " : " + speed + " - " + date);
         markerOptions.visible(true);
         markerOptions.position(point);
+
 
         //zoom de la caméra sur la position qu'on désire afficher
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 16));
@@ -288,11 +358,8 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
     }
 
     private void setHistorique() {
-        LinearLayoutManager teamLinearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        teamLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRvHistory.setLayoutManager(teamLinearLayoutManager);
-        //POIAdapter poiAdapter = new POIAdapter(getActivity(), map.getPoi());
-        //mRvHistory.setAdapter(poiAdapter);
+        HistoryAdapter historyAdapter = new HistoryAdapter(getActivity(), AlerteProvider.getAlerte(getActivity()));
+        mLvHistory.setAdapter(historyAdapter);
     }
 
     // EventBus
@@ -303,7 +370,11 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
             slideUp.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    mRvHistory.setVisibility(View.VISIBLE);
+                    mLvHistory.setVisibility(View.VISIBLE);
+                    setHistorique();
+                    if (stateListView != null) {
+                        mLvHistory.onRestoreInstanceState(stateListView);
+                    }
                 }
 
                 @Override
@@ -316,19 +387,19 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
 
                 }
             });
-            mRvHistory.startAnimation(slideUp);
+            mLvHistory.startAnimation(slideUp);
             mIsShowingLegend = true;
         } else {
             Animation slideDown = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
             slideDown.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
+                    stateListView = mLvHistory.onSaveInstanceState();
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    mRvHistory.setVisibility(View.GONE);
+                    mLvHistory.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -336,7 +407,7 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
 
                 }
             });
-            mRvHistory.startAnimation(slideDown);
+            mLvHistory.startAnimation(slideDown);
             mIsShowingLegend = false;
         }
 

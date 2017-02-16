@@ -42,9 +42,6 @@ public class HomeFragment extends CobraFragment {
     }
 
     public static HomeFragment getInstance() {
-        if (inst == null) {
-            return new HomeFragment();
-        }
         return inst;
     }
 
