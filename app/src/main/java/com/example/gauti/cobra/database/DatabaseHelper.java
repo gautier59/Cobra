@@ -23,13 +23,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     // --------------------------------------------------------------------------------------------
     private static final String LOG_TAG = DatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "alerte.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     // Private members
     // --------------------------------------------------------------------------------------------
     private static DatabaseHelper sInstance;
     private static AtomicInteger usageCounter = new AtomicInteger(0);
-    private Dao<Alerte, String> mAlerteDao;
+    private Dao<Alerte, Integer> mAlerteDao;
 
     // Singleton
     // --------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     // DAOs
     // --------------------------------------------------------------------------------------------
-    public Dao<Alerte, String> getAlerteDao() throws SQLException {
+    public Dao<Alerte, Integer> getAlerteDao() throws SQLException {
         if (mAlerteDao == null) {
             mAlerteDao = getDao(Alerte.class);
         }

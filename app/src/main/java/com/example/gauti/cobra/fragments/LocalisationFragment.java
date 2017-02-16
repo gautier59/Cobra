@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.example.gauti.cobra.MainActivity;
 import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.enumeration.EnumSms;
+import com.example.gauti.cobra.event.EventAlerte;
 import com.example.gauti.cobra.fragments.history.HistoryAdapter;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.example.gauti.cobra.model.Alerte;
@@ -410,6 +411,9 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
             mLvHistory.startAnimation(slideDown);
             mIsShowingLegend = false;
         }
+    }
 
+    public void onEvent(EventAlerte event) {
+        setHistorique();
     }
 }

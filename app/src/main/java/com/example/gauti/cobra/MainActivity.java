@@ -172,8 +172,8 @@ public class MainActivity extends AppCompatActivity
                 mNavigationView.getMenu().getItem(0).setChecked(true);
                 onNavigationItemSelected(mNavigationView.getMenu().getItem(0));
             } else {
-                mNavigationView.getMenu().getItem(2).setChecked(true);
-                onNavigationItemSelected(mNavigationView.getMenu().getItem(2));
+                mNavigationView.getMenu().getItem(3).setChecked(true);
+                onNavigationItemSelected(mNavigationView.getMenu().getItem(3));
             }
         } else {
             new AlertDialog.Builder(this)

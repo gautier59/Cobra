@@ -36,7 +36,7 @@ public class CobraFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 mNavigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                mNavigationView.getMenu().getItem(2).setChecked(true);
+                mNavigationView.getMenu().getItem(3).setChecked(true);
 
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, new SettingsFragment());

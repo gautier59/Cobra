@@ -35,6 +35,10 @@ public class Alerte {
     public Alerte() {
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getSpeed() {
         return speed;
     }

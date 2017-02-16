@@ -7,6 +7,14 @@
     <ListView
         android:id="@+id/lvHistory"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_delete_all" />
+
+    <Button
+        android:id="@+id/btn_delete_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/button_history_delete_all" />
 
 </RelativeLayout>

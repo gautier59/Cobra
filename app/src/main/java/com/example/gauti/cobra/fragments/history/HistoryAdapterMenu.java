@@ -1,15 +1,21 @@
 package com.example.gauti.cobra.fragments.history;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.model.Alerte;
+import com.example.gauti.cobra.provider.AlerteProvider;
 
 import java.util.List;
 
@@ -20,72 +26,72 @@ import butterknife.ButterKnife;
  * Created by mobilefactory on 13/02/2017.
  */
 
-public class HistoryAdapterMenu extends RecyclerView.Adapter<HistoryAdapterMenu.HistoryViewHolder> {
-
-    // Private fields
-    // --------------------------------------------------------------------------------------------
+public class HistoryAdapterMenu extends ArrayAdapter<Alerte> {
     private Context mContext;
     private List<Alerte> mAlerteList;
+    private int mIdAlerte;
 
-    // Constructor
-    // --------------------------------------------------------------------------------------------
-    public HistoryAdapterMenu(Context mContext, List<Alerte> mAlerteList) {
-        this.mContext = mContext;
-        this.mAlerteList = mAlerteList;
+    public HistoryAdapterMenu(Context context, List<Alerte> alertes) {
+        super(context, 0, alertes);
+        mContext = context;
+        mAlerteList = alertes;
     }
 
-    // Adapter implementation
-    // --------------------------------------------------------------------------------------------
+    @NonNull
     @Override
-    public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_alerte, parent, false);
-        return new HistoryViewHolder(view, new HistoryViewHolder.HistoryViewHolderClickListener() {
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_alerte_menu, parent, false);
+        }
+
+        HistoryAdapterMenu.HistoryViewHolder viewHolder = (HistoryAdapterMenu.HistoryViewHolder) convertView.getTag();
+        if (viewHolder == null) {
+            viewHolder = new HistoryAdapterMenu.HistoryViewHolder();
+            viewHolder.date = (TextView) convertView.findViewById(R.id.tvDateRow);
+            viewHolder.delete = (Button) convertView.findViewById(R.id.btn_delete);
+            convertView.setTag(viewHolder);
+        }
+
+        final Alerte alerte = getItem(position);
+
+        viewHolder.date.setText(alerte.getDate());
+
+        viewHolder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(int position) {
-                if (!mAlerteList.get(position).getDate().isEmpty()) {
-                    //TODO ajouter le marker
-                }
+            public void onClick(View view) {
+                new AlertDialog.Builder(mContext)
+                        .setTitle(mContext.getResources().getString(R.string.popover_history_delete_title))
+                        .setMessage(mContext.getResources().getString(R.string.popover_history_delete_text))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mIdAlerte = mAlerteList.get(position).getId();
+                                AlerteProvider.deleteAlerte(mContext, mIdAlerte);
+                                mAlerteList.remove(position);
+                                notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .create().show();
             }
         });
+
+        return convertView;
+    }
+
+    @Nullable
+    @Override
+    public Alerte getItem(int position) {
+        return super.getItem(position);
     }
 
     @Override
-    public void onBindViewHolder(HistoryViewHolder holder, int position) {
-        Alerte alerte = mAlerteList.get(position);
-
-        holder.mTvDateRow.setText(alerte.getDate());
+    public long getItemId(int position) {
+        return super.getItemId(position);
     }
 
-    @Override
-    public int getItemCount() {
-        return 0;
-    }
-
-    // View holder
-    // --------------------------------------------------------------------------------------------
-    public static class HistoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @Bind(R.id.tvDateRow)
-        TextView mTvDateRow;
-
-        HistoryViewHolderClickListener mListener;
-
-        HistoryViewHolder(View itemView, HistoryViewHolderClickListener listener) {
-            super(itemView);
-
-            ButterKnife.bind(this, itemView);
-
-            mListener = listener;
-
-            mTvDateRow.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            mListener.onItemClick(getAdapterPosition());
-        }
-
-        public interface HistoryViewHolderClickListener {
-            void onItemClick(int position);
-        }
+    private class HistoryViewHolder {
+        public TextView date;
+        public Button delete;
     }
 }
