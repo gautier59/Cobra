@@ -1,9 +1,11 @@
 package com.example.gauti.cobra.fragments;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -105,16 +108,6 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (getArguments() != null && getArguments().getString(MainActivity.DATE) != null) {
-            ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setDateSms(getArguments().getString(MainActivity.DATE));
-            Double latitude = getArguments().getDouble(MainActivity.LATITUDE, 0);
-            Double longitude = getArguments().getDouble(MainActivity.LONGITUDE, 0);
-            String speed = getArguments().getString(MainActivity.SPEED);
-            String date = getArguments().getString(MainActivity.DATE);
-            locFirst = true;
-            addMarker(latitude, longitude, speed, date);
-        }
-
         switch (timeSms) {
             case 0:
                 timeSms = 30000;
@@ -136,6 +129,17 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
         }
     }
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Double latitude = intent.getDoubleExtra(MainActivity.LATITUDE, 0);
+            Double longitude = intent.getDoubleExtra(MainActivity.LONGITUDE, 0);
+            String speed = intent.getStringExtra(MainActivity.SPEED);
+            String date = intent.getStringExtra(MainActivity.DATE);
+            addMarker(latitude, longitude, speed, date);
+        }
+    };
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -151,15 +155,17 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         inst = this;
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("AlerteEvent"));
     }
 
     @Override
     public void onPause() {
         super.onPause();
         inst = null;
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
     }
 
     @Override
@@ -202,6 +208,17 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
                 return true;
             }
         });
+
+        //AddMarker if click to Popup Alerte
+        if (getArguments() != null && getArguments().getString(MainActivity.DATE) != null) {
+            ApplicationSharedPreferences.getInstance(getActivity().getApplicationContext()).setDateSms(getArguments().getString(MainActivity.DATE));
+            Double latitude = getArguments().getDouble(MainActivity.LATITUDE, 0);
+            Double longitude = getArguments().getDouble(MainActivity.LONGITUDE, 0);
+            String speed = getArguments().getString(MainActivity.SPEED);
+            String date = getArguments().getString(MainActivity.DATE);
+            locFirst = true;
+            addMarker(latitude, longitude, speed, date);
+        }
     }
 
     @OnClick(R.id.btn_search)

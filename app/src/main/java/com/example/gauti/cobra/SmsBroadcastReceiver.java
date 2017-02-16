@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -39,13 +40,13 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     private String address;
     private HomeFragment instHome = HomeFragment.getInstance();
     private LocalisationFragment instLoc = LocalisationFragment.getInstance();
-    private Context context;
+    private Context mContext;
     private NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle intentExtras = intent.getExtras();
-        this.context = context;
+        this.mContext = context;
         if (intentExtras != null) {
             Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
 
@@ -99,27 +100,34 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Log.i("LatLong", "Lat : " + latitude + " - Long : " + longitude + " - Time : " + date);
 
         if (instLoc != null) {
-            instLoc.addMarker(latitude, longitude, speed, date);
+            Intent intent = new Intent("AlerteEvent");
+            intent.putExtra(MainActivity.LATITUDE, latitude);
+            intent.putExtra(MainActivity.LONGITUDE, longitude);
+            intent.putExtra(MainActivity.SPEED, speed);
+            intent.putExtra(MainActivity.DATE, date);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+
+            //instLoc.addMarker(latitude, longitude, speed, date);
         } else {
-            addNotification(context.getResources().getString(R.string.notification_text) + " - " + date, latitude, longitude, speed, date);
+            addNotification(mContext.getResources().getString(R.string.notification_text) + " - " + date, latitude, longitude, speed, date);
 
         }
         Alerte alerte = new Alerte(speed, date, latitude, longitude);
-        AlerteProvider.setAlerte(context, alerte);
+        AlerteProvider.setAlerte(mContext, alerte);
     }
 
     private void addNotification(String text, Double latitude, Double longitude, String speed, String date) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Intent resultIntent = new Intent(context, MainActivity.class);
+        Intent resultIntent = new Intent(mContext, MainActivity.class);
         resultIntent.putExtra(MainActivity.LATITUDE, latitude);
         resultIntent.putExtra(MainActivity.LONGITUDE, longitude);
         resultIntent.putExtra(MainActivity.SPEED, speed);
         resultIntent.putExtra(MainActivity.DATE, date);
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, NOTIFICATION, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext, NOTIFICATION, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(context.getResources().getString(R.string.app_name))
+                .setContentTitle(mContext.getResources().getString(R.string.app_name))
                 .setContentText(text)
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
@@ -129,7 +137,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
 
-        notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION, notification);
     }
 }
