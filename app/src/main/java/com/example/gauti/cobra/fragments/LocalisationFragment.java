@@ -28,6 +28,7 @@ import com.example.gauti.cobra.MainActivity;
 import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.enumeration.EnumSms;
 import com.example.gauti.cobra.event.EventAlerte;
+import com.example.gauti.cobra.event.EventMarker;
 import com.example.gauti.cobra.fragments.history.HistoryAdapter;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 import com.example.gauti.cobra.model.Alerte;
@@ -129,17 +130,6 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
         }
     }
 
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Double latitude = intent.getDoubleExtra(MainActivity.LATITUDE, 0);
-            Double longitude = intent.getDoubleExtra(MainActivity.LONGITUDE, 0);
-            String speed = intent.getStringExtra(MainActivity.SPEED);
-            String date = intent.getStringExtra(MainActivity.DATE);
-            addMarker(latitude, longitude, speed, date);
-        }
-    };
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -158,14 +148,12 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
     public void onResume() {
         super.onResume();
         inst = this;
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("AlerteEvent"));
     }
 
     @Override
     public void onPause() {
         super.onPause();
         inst = null;
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
     }
 
     @Override
@@ -257,6 +245,7 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
 
     @OnItemClick(R.id.lv_history)
     public void onItemClick(int position) {
+        locFirst = false;
         int dateFound = -1;
         List<Alerte> alerteList = AlerteProvider.getAlerte(getActivity());
         Alerte alerte = alerteList.get(position);
@@ -432,5 +421,9 @@ public class LocalisationFragment extends CobraFragment implements OnMapReadyCal
 
     public void onEvent(EventAlerte event) {
         setHistorique();
+    }
+
+    public void onEvent(EventMarker eventMarker) {
+        addMarker(eventMarker.getLatitude(), eventMarker.getLongitude(), eventMarker.getSpeed(), eventMarker.getDate());
     }
 }

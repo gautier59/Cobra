@@ -15,6 +15,7 @@ import android.support.v7.app.NotificationCompat;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import com.example.gauti.cobra.event.EventMarker;
 import com.example.gauti.cobra.fragments.HomeFragment;
 import com.example.gauti.cobra.fragments.LocalisationFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
@@ -25,6 +26,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+
+import de.greenrobot.event.EventBus;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -100,14 +103,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Log.i("LatLong", "Lat : " + latitude + " - Long : " + longitude + " - Time : " + date);
 
         if (instLoc != null) {
-            Intent intent = new Intent("AlerteEvent");
-            intent.putExtra(MainActivity.LATITUDE, latitude);
-            intent.putExtra(MainActivity.LONGITUDE, longitude);
-            intent.putExtra(MainActivity.SPEED, speed);
-            intent.putExtra(MainActivity.DATE, date);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-
-            //instLoc.addMarker(latitude, longitude, speed, date);
+            EventBus.getDefault().post(new EventMarker(latitude, longitude, date, speed));
         } else {
             addNotification(mContext.getResources().getString(R.string.notification_text) + " - " + date, latitude, longitude, speed, date);
 
