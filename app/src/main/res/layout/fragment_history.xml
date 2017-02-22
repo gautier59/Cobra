@@ -1,20 +1,51 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical"
     tools:context="com.example.gauti.cobra.fragments.history.HistoryFragment">
 
-    <ListView
-        android:id="@+id/lvHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/btn_delete_all" />
-
-    <Button
-        android:id="@+id/btn_delete_all"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/button_history_delete_all" />
+        android:layout_height="0dp"
+        android:layout_weight=".5"
+        android:orientation="vertical">
 
-</RelativeLayout>
+        <ListView
+            android:id="@+id/lvHistoryMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/btn_delete_all" />
+
+        <Button
+            android:id="@+id/btn_delete_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/button_history_delete_all" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlMapHostoryMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight=".5"
+        android:visibility="gone">
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapHistoryMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/ivExit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="4dp"
+            android:clickable="true"
+            android:src="@drawable/button_close" />
+    </RelativeLayout>
+
+</LinearLayout>
