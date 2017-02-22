@@ -1,6 +1,5 @@
 package com.example.gauti.cobra;
 
-import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -18,12 +17,25 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import com.example.gauti.cobra.fragments.HomeFragment;
+import com.example.gauti.cobra.fragments.LocalisationFragment;
+import com.example.gauti.cobra.fragments.SettingsFragment;
+import com.example.gauti.cobra.fragments.history.HistoryFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    // Constants
+    // --------------------------------------------------------------------------------------------
     public static final String LATITUDE = "lattitude";
     public static final String LONGITUDE = "longitude";
     public static final String DATE = "date";
@@ -31,32 +43,39 @@ public class MainActivity extends AppCompatActivity
 
     private static final int PERMISSIONS_REQUEST_ALL = 1;
 
-    private NavigationView navigationView;
+    // Private fields
+    // --------------------------------------------------------------------------------------------
     private Bundle bundle;
 
+    // Views
+    // --------------------------------------------------------------------------------------------
+    @Bind(R.id.tv_history)
+    TextView mTvHistory;
+
+    @Bind(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    @Bind(R.id.nav_view)
+    NavigationView mNavigationView;
+
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+
+    // Life cycle
+    // --------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         String[] PERMISSIONS = {
                 android.Manifest.permission.SEND_SMS,
@@ -81,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         if (bundle != null && bundle.getString(DATE) != null) {
             if ((ApplicationSharedPreferences.getInstance(this).getDateSms().isEmpty())
                     || (!ApplicationSharedPreferences.getInstance(this).getDateSms().equals(bundle.getString(DATE)))) {
-                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_localisation));
+                onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_localisation));
             }
         }
     }
@@ -105,10 +124,20 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             fragment = new HomeFragment();
+            showHistoryButton(false);
+            mToolbar.setTitle(getResources().getString(R.string.menu_home));
         } else if (id == R.id.nav_localisation) {
             fragment = new LocalisationFragment();
+            showHistoryButton(true);
+            mToolbar.setTitle(getResources().getString(R.string.menu_localisation));
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
+            showHistoryButton(false);
+            mToolbar.setTitle(getResources().getString(R.string.menu_settings));
+        } else if (id == R.id.nav_history) {
+            fragment = new HistoryFragment();
+            showHistoryButton(false);
+            mToolbar.setTitle(getResources().getString(R.string.menu_history));
         }
 
         if (bundle != null) {
@@ -140,11 +169,11 @@ public class MainActivity extends AppCompatActivity
     private void launchFirstFragment(boolean permissionGranted) {
         if (permissionGranted) {
             if (ApplicationSharedPreferences.getInstance(this.getApplicationContext()).getSettingsNumero() != null) {
-                navigationView.getMenu().getItem(0).setChecked(true);
-                onNavigationItemSelected(navigationView.getMenu().getItem(0));
+                mNavigationView.getMenu().getItem(0).setChecked(true);
+                onNavigationItemSelected(mNavigationView.getMenu().getItem(0));
             } else {
-                navigationView.getMenu().getItem(2).setChecked(true);
-                onNavigationItemSelected(navigationView.getMenu().getItem(2));
+                mNavigationView.getMenu().getItem(3).setChecked(true);
+                onNavigationItemSelected(mNavigationView.getMenu().getItem(3));
             }
         } else {
             new AlertDialog.Builder(this)
@@ -169,5 +198,23 @@ public class MainActivity extends AppCompatActivity
                 launchFirstFragment(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
             }
         }
+    }
+
+    private void showHistoryButton(boolean show) {
+        if (show) {
+            mTvHistory.setVisibility(View.VISIBLE);
+        } else {
+            mTvHistory.setVisibility(View.GONE);
+        }
+    }
+
+    @OnClick(R.id.tv_history)
+    void showOrHideLegend() {
+        EventBus.getDefault().post(new HistoryClickEvent());
+    }
+
+    // EventBus
+    // --------------------------------------------------------------------------------------------
+    public class HistoryClickEvent {
     }
 }

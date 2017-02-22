@@ -1,4 +1,4 @@
-package com.example.gauti.cobra;
+package com.example.gauti.cobra.fragments;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -10,6 +10,7 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.gauti.cobra.R;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
 
 /**
@@ -17,9 +18,13 @@ import com.example.gauti.cobra.global.ApplicationSharedPreferences;
  */
 public class CobraFragment extends Fragment {
 
+    // Private fields
+    // --------------------------------------------------------------------------------------------
     AlertDialog.Builder builderNoPhone;
-    private NavigationView navigationView;
+    private NavigationView mNavigationView;
 
+    // Life cycle
+    // --------------------------------------------------------------------------------------------
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +35,8 @@ public class CobraFragment extends Fragment {
         builderNoPhone.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-                navigationView.getMenu().getItem(2).setChecked(true);
+                mNavigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+                mNavigationView.getMenu().getItem(3).setChecked(true);
 
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, new SettingsFragment());

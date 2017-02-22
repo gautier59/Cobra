@@ -10,16 +10,24 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import com.example.gauti.cobra.event.EventMarker;
+import com.example.gauti.cobra.fragments.HomeFragment;
+import com.example.gauti.cobra.fragments.LocalisationFragment;
 import com.example.gauti.cobra.global.ApplicationSharedPreferences;
+import com.example.gauti.cobra.model.Alerte;
+import com.example.gauti.cobra.provider.AlerteProvider;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+
+import de.greenrobot.event.EventBus;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -35,19 +43,19 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     private String address;
     private HomeFragment instHome = HomeFragment.getInstance();
     private LocalisationFragment instLoc = LocalisationFragment.getInstance();
-    private Context context;
+    private Context mContext;
     private NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle intentExtras = intent.getExtras();
-        this.context = context;
+        this.mContext = context;
         if (intentExtras != null) {
             Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
 
             for (int i = 0; i < sms.length; ++i) {
                 SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
-                Log.i("NUM sauv: ",ApplicationSharedPreferences.getInstance(context).getSettingsNumero() + " - Num recu:" +smsMessage.getOriginatingAddress());
+                Log.i("NUM sauv: ", ApplicationSharedPreferences.getInstance(context).getSettingsNumero() + " - Num recu:" + smsMessage.getOriginatingAddress());
                 if (smsMessage.getOriginatingAddress().equals(ApplicationSharedPreferences.getInstance(context).getSettingsNumero())) {
                     smsBody = smsMessage.getMessageBody().toString();
                     address = smsMessage.getOriginatingAddress();
@@ -95,24 +103,27 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Log.i("LatLong", "Lat : " + latitude + " - Long : " + longitude + " - Time : " + date);
 
         if (instLoc != null) {
-            instLoc.addMarker(latitude, longitude, speed, date);
+            EventBus.getDefault().post(new EventMarker(latitude, longitude, date, speed));
         } else {
-            addNotification(context.getResources().getString(R.string.notification_text) + " - " + date, latitude, longitude, speed, date);
+            addNotification(mContext.getResources().getString(R.string.notification_text) + " - " + date, latitude, longitude, speed, date);
+
         }
+        Alerte alerte = new Alerte(speed, date, latitude, longitude);
+        AlerteProvider.setAlerte(mContext, alerte);
     }
 
     private void addNotification(String text, Double latitude, Double longitude, String speed, String date) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Intent resultIntent = new Intent(context, MainActivity.class);
+        Intent resultIntent = new Intent(mContext, MainActivity.class);
         resultIntent.putExtra(MainActivity.LATITUDE, latitude);
         resultIntent.putExtra(MainActivity.LONGITUDE, longitude);
         resultIntent.putExtra(MainActivity.SPEED, speed);
         resultIntent.putExtra(MainActivity.DATE, date);
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(context, NOTIFICATION, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext, NOTIFICATION, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(context.getResources().getString(R.string.app_name))
+                .setContentTitle(mContext.getResources().getString(R.string.app_name))
                 .setContentText(text)
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
@@ -122,7 +133,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
 
-        notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION, notification);
     }
 }
